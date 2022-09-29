@@ -67,7 +67,7 @@ class EasyApplyBot:
         self.blackListTitles = blackListTitles
         self.start_linkedin(username, password)
 
-    def get_appliedIDs(self, filename) -> list | None:
+    def get_appliedIDs(self, filename):
         try:
             df = pd.read_csv(filename,
                              header=None,
@@ -96,7 +96,7 @@ class EasyApplyBot:
         options.add_argument("--disable-blink-features=AutomationControlled")
         return options
 
-    def start_linkedin(self, username, password) -> None:
+    def start_linkedin(self, username, password):
         log.info("Logging in.....Please wait :)  ")
         self.browser.get("https://www.linkedin.com/login?trk=guest_homepage-basic_nav-header-signin")
         try:
@@ -156,7 +156,7 @@ class EasyApplyBot:
                 log.info(f"{(self.MAX_SEARCH_TIME - (time.time() - start_time)) // 60} minutes left in this search")
 
                 # sleep to make sure everything loads, add random to make us look human.
-                randoTime: float = random.uniform(3.5, 4.9)
+                randoTime: float = random.uniform(0, 1)
                 log.debug(f"Sleeping for {round(randoTime, 1)}")
                 time.sleep(randoTime)
                 self.load_page(sleep=1)
@@ -184,7 +184,7 @@ class EasyApplyBot:
                 IDs: list = []
                 for link in links:
                     children = link.find_elements("xpath",
-                        './/a[@data-control-name]'
+                        './/a[@data-control-id]'
                     )
                     for child in children:
                         if child.text not in self.blacklist:
@@ -203,7 +203,7 @@ class EasyApplyBot:
                     jobs_per_page: int = jobs_per_page + 25
                     count_job = 0
                     self.avoid_lock()
-                    self.browser, jobs_per_page: int = self.next_jobs_page(position,
+                    self.browser, jobs_per_page = self.next_jobs_page(position,
                                                                     location,
                                                                     jobs_per_page)
                 # loop over IDs to apply
@@ -253,7 +253,7 @@ class EasyApplyBot:
                         Going to next jobs page, YEAAAHHH!!
                         ****************************************\n\n""")
                         self.avoid_lock()
-                        self.browser, jobs_per_page: int = self.next_jobs_page(position,
+                        self.browser, jobs_per_page = self.next_jobs_page(position,
                                                                         location,
                                                                         jobs_per_page)
             except Exception as e:
@@ -290,8 +290,8 @@ class EasyApplyBot:
             )
 
             EasyApplyButton = button[0]
-            
-        except Exception as e: 
+
+        except Exception as e:
             print("Exception:",e)
             EasyApplyButton = False
 
